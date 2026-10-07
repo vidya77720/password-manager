@@ -1,0 +1,5 @@
+# Password Generator Project Requirements
+# This project uses only Python standard library
+# No external dependencies required
+
+# Python version: 3.6+

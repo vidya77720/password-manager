@@ -1,0 +1,223 @@
+[
+  {
+    "password": "_(*0tKTS!0Z:8E8L",
+    "timestamp": "2026-10-06T16:25:28.864561",
+    "length": 16,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "q2W5^M4T:D0r",
+    "timestamp": "2026-10-06T16:25:29.634902",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "-{5%}P;W(H?f",
+    "timestamp": "2026-10-06T16:25:29.636776",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "*y1PCU>e<q:#",
+    "timestamp": "2026-10-06T16:25:29.639018",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "rAjgOn3Q",
+    "timestamp": "2026-10-06T16:25:29.657590",
+    "length": 8,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": false,
+      "exclude_similar": false
+    },
+    "strength": "Medium"
+  },
+  {
+    "password": ",U4wr.{@A0*H",
+    "timestamp": "2026-10-06T16:25:29.660263",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "vC6cLIJm2VNFms4G",
+    "timestamp": "2026-10-06T16:25:29.662607",
+    "length": 16,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": false,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "c!ig+huBqS#KK6Po@j84",
+    "timestamp": "2026-10-06T16:25:29.665549",
+    "length": 20,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "<F$y%5F)w8>x",
+    "timestamp": "2026-10-06T16:25:29.669680",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": true
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "x2q$SCF9(5%Oan",
+    "timestamp": "2026-10-06T16:25:29.708176",
+    "length": 14,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "i,}3r{o,0Q]&bW",
+    "timestamp": "2026-10-06T16:25:29.711471",
+    "length": 14,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "r]{W7O^67E:f9E",
+    "timestamp": "2026-10-06T16:25:29.714222",
+    "length": 14,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": ">oS+5?:7vC?P7N",
+    "timestamp": "2026-10-06T16:25:29.717905",
+    "length": 14,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "*_wv2*G?D4_rB_",
+    "timestamp": "2026-10-06T16:25:29.720660",
+    "length": 14,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "igr5]1MFcg{C",
+    "timestamp": "2026-10-06T16:25:29.746519",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "}dOQ@d39Q>zI",
+    "timestamp": "2026-10-06T16:25:29.749797",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  },
+  {
+    "password": "|hBMZS-v_6nm",
+    "timestamp": "2026-10-06T16:25:29.752773",
+    "length": 12,
+    "options": {
+      "use_uppercase": true,
+      "use_lowercase": true,
+      "use_digits": true,
+      "use_symbols": true,
+      "exclude_similar": false
+    },
+    "strength": "Strong"
+  }
+]
