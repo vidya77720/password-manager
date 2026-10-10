@@ -1,1187 +1,729 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CipherForge - Advanced Password Manager & Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CipherForge &mdash; Enterprise Password Engine</title>
+    <meta name="description" content="CipherForge: Military-grade password generation with real-time strength analysis, history tracking, and export capabilities.">
+    <meta name="theme-color" content="#0b0f1a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #121927;
-            --bg-card: rgba(22, 32, 50, 0.7);
-            --bg-glass: rgba(255, 255, 255, 0.03);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(99, 102, 241, 0.4);
-            --accent-primary: #6366f1;
-            --accent-secondary: #a855f7;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-            --radius-sm: 6px;
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg:          #080c16;
+            --bg2:         #0e1525;
+            --bg3:         #141c30;
+            --glass:       rgba(20, 28, 48, 0.72);
+            --glass-light: rgba(255,255,255,0.04);
+            --border:      rgba(255,255,255,0.07);
+            --border-hi:   rgba(99,102,241,0.45);
+            --p1:  #6366f1;
+            --p2:  #8b5cf6;
+            --p3:  #a855f7;
+            --p4:  #ec4899;
+            --grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 40%, #ec4899 100%);
+            --cyan:  #22d3ee;
+            --green: #10b981;
+            --amber: #f59e0b;
+            --red:   #ef4444;
+            --t1: #f1f5f9;
+            --t2: #94a3b8;
+            --t3: #64748b;
+            --t4: #334155;
+            --r-xl: 24px; --r-lg: 18px; --r-md: 12px; --r-sm: 8px; --r-xs: 5px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --fast: 0.18s; --mid: 0.3s; --slow: 0.55s;
+            --shadow-card: 0 24px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background: var(--bg);
+            color: var(--t1);
+            min-height: 100dvh;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.12) 0%, transparent 40%);
-            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* BACKGROUND */
+        .bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35; animation: orbFloat 20s ease-in-out infinite; }
+        .orb-1 { width:600px;height:600px;background:radial-gradient(circle,#6366f1,transparent 70%);top:-200px;left:-150px;animation-delay:0s; }
+        .orb-2 { width:500px;height:500px;background:radial-gradient(circle,#ec4899,transparent 70%);bottom:-200px;right:-100px;animation-delay:-7s; }
+        .orb-3 { width:350px;height:350px;background:radial-gradient(circle,#22d3ee,transparent 70%);top:40%;left:30%;animation-delay:-14s;opacity:0.15; }
+        @keyframes orbFloat {
+            0%   { transform: translate(0,0) scale(1); }
+            33%  { transform: translate(30px,-40px) scale(1.05); }
+            66%  { transform: translate(-20px,20px) scale(0.97); }
+            100% { transform: translate(0,0) scale(1); }
+        }
+        .bg-grid {
+            position:fixed;inset:0;z-index:0;
+            background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+            background-size:60px 60px;
+            mask-image:radial-gradient(ellipse at center,black 0%,transparent 80%);
+            pointer-events:none;
+        }
+
+        /* HEADER */
         header {
-            padding: 24px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1100px;
-            margin: 0 auto;
-            width: 100%;
+            position:sticky;top:0;z-index:100;padding:0 20px;
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            background:rgba(8,12,22,.75);border-bottom:1px solid var(--border);
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
-        }
-
+        .header-inner { max-width:1180px;margin:0 auto;height:68px;display:flex;align-items:center;justify-content:space-between; }
+        .brand { display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit; }
         .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: var(--accent-gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            width:44px;height:44px;background:var(--grad);border-radius:14px;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 6px 24px rgba(99,102,241,.45),0 0 0 1px rgba(255,255,255,.1) inset;
+            flex-shrink:0;position:relative;overflow:hidden;
+        }
+        .brand-icon::after { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25) 0%,transparent 60%); }
+        .brand-icon svg { width:22px;height:22px;fill:white;position:relative;z-index:1; }
+        .brand-name {
+            font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;letter-spacing:-0.03em;
+            background:linear-gradient(135deg,#fff 30%,#a5b4fc 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .brand-tagline { font-size:.72rem;color:var(--t3);font-weight:500;letter-spacing:.03em; }
+        .live-badge {
+            display:flex;align-items:center;gap:8px;padding:7px 16px;
+            background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);
+            border-radius:30px;color:#34d399;font-size:.78rem;font-weight:600;letter-spacing:.02em;
+        }
+        .pulse {
+            width:8px;height:8px;background:#10b981;border-radius:50%;
+            box-shadow:0 0 0 0 rgba(16,185,129,.7);animation:liveRing 2s ease-out infinite;
+        }
+        @keyframes liveRing {
+            0%  { box-shadow:0 0 0 0 rgba(16,185,129,.7); }
+            70% { box-shadow:0 0 0 7px rgba(16,185,129,0); }
+            100%{ box-shadow:0 0 0 0 rgba(16,185,129,0); }
         }
 
-        .brand-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
-        }
+        /* LAYOUT */
+        main { padding:36px 20px 120px;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 400px;gap:24px;position:relative;z-index:1; }
 
-        .brand-text h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to right, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .brand-text p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-
-        main {
-            max-width: 1100px;
-            margin: 0 auto 50px auto;
-            padding: 0 20px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 24px;
-        }
-
-        @media (max-width: 900px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* CARD */
         .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            position: relative;
+            background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+            border:1px solid var(--border);border-radius:var(--r-xl);padding:28px;
+            box-shadow:var(--shadow-card);position:relative;overflow:hidden;
+            animation:fadeSlideIn .5s var(--ease) both;
         }
-
-        .password-display-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            border-radius: var(--radius-md);
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 20px;
-            position: relative;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        .card::before {
+            content:'';position:absolute;top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
         }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
 
-        .password-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: #38bdf8;
-            letter-spacing: 0.04em;
-            word-break: break-all;
-            user-select: all;
+        /* PASSWORD BOX */
+        .pwd-box {
+            background:rgba(6,10,20,.8);border:1px solid rgba(99,102,241,.25);
+            border-radius:var(--r-lg);padding:20px 22px;margin-bottom:24px;
+            position:relative;overflow:hidden;transition:border-color var(--mid) var(--ease);
         }
-
-        .display-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
+        .pwd-box::after {
+            content:'';position:absolute;top:0;left:-100%;width:40%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(99,102,241,.08),transparent);
+            animation:shimmer 3s ease-in-out infinite;
         }
-
-        .btn-icon {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
+        @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+        .pwd-box:hover { border-color:rgba(99,102,241,.45); }
+        .pwd-box.focus-glow { border-color:rgba(99,102,241,.5);box-shadow:0 0 0 3px rgba(99,102,241,.1); }
+        .pwd-label { font-size:.7rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px; }
+        .pwd-row { display:flex;align-items:center;justify-content:space-between;gap:14px; }
+        #passwordDisplay {
+            font-family:'JetBrains Mono',monospace;font-size:clamp(1rem,3vw,1.45rem);
+            font-weight:600;color:var(--cyan);letter-spacing:.05em;word-break:break-all;
+            user-select:all;cursor:pointer;flex:1;line-height:1.4;transition:color var(--mid) var(--ease);
         }
-
-        .btn-icon:hover {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: var(--accent-primary);
-            color: white;
-            transform: translateY(-2px);
+        #passwordDisplay.generating { opacity:.4;animation:blink .6s ease-in-out infinite alternate; }
+        @keyframes blink { to{opacity:.8} }
+        .pwd-actions { display:flex;gap:8px;flex-shrink:0; }
+        .icon-btn {
+            width:44px;height:44px;background:rgba(255,255,255,.05);border:1px solid var(--border);
+            color:var(--t2);border-radius:var(--r-md);display:flex;align-items:center;
+            justify-content:center;cursor:pointer;transition:all var(--fast) var(--ease);flex-shrink:0;
         }
+        .icon-btn svg { width:19px;height:19px;fill:currentColor;transition:transform var(--fast) var(--bounce); }
+        .icon-btn:hover { background:rgba(99,102,241,.2);border-color:var(--border-hi);color:white;box-shadow:0 0 16px rgba(99,102,241,.2); }
+        .icon-btn:hover svg { transform:scale(1.15); }
+        .icon-btn:active { transform:scale(.93); }
+        .icon-btn.copied { background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.5);color:#34d399; }
 
-        .btn-icon svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
+        /* STRENGTH */
+        .entropy-bar { margin-bottom:26px; }
+        .entropy-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px; }
+        .entropy-label { font-size:.8rem;color:var(--t2);font-weight:500; }
+        .strength-pill { font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:20px;transition:all var(--mid) var(--ease); }
+        .bar-track { height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;display:flex;gap:3px; }
+        .bar-seg { flex:1;height:100%;border-radius:2px;background:rgba(255,255,255,.07);transition:background var(--mid) var(--ease),box-shadow var(--mid) var(--ease); }
+        .strength-weak   .bar-seg.lit { background:var(--red);box-shadow:0 0 6px var(--red); }
+        .strength-medium .bar-seg.lit { background:var(--amber);box-shadow:0 0 6px var(--amber); }
+        .strength-strong .bar-seg.lit { background:var(--green);box-shadow:0 0 6px var(--green); }
+        .pill-weak   { background:rgba(239,68,68,.15);color:#f87171; }
+        .pill-medium { background:rgba(245,158,11,.15);color:#fbbf24; }
+        .pill-strong { background:rgba(16,185,129,.15);color:#34d399; }
+        .feedback-row { display:flex;flex-wrap:wrap;gap:6px;margin-top:10px; }
+        .chip { font-size:.73rem;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);color:var(--t2);font-weight:500; }
+
+        /* SECTION LABEL */
+        .sec-label {
+            font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+            color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:8px;
         }
+        .sec-label::after { content:'';flex:1;height:1px;background:var(--border); }
 
-        .strength-indicator {
-            margin-bottom: 24px;
-        }
-
-        .strength-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
-
-        .strength-badge {
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-            padding: 3px 10px;
-            border-radius: 12px;
-        }
-
-        .strength-meter-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 3px;
-            overflow: hidden;
-            display: flex;
-            gap: 4px;
-        }
-
-        .bar-segment {
-            height: 100%;
-            flex: 1;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 2px;
-            transition: background 0.3s ease;
-        }
-
-        .feedback-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 10px;
-        }
-
-        .chip {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Controls Section */
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 14px;
-        }
-
-        .length-control {
-            margin-bottom: 24px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .length-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent-primary);
-            background: rgba(99, 102, 241, 0.1);
-            padding: 2px 10px;
-            border-radius: var(--radius-sm);
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #6366f1;
-            cursor: pointer;
-            box-shadow: 0 0 12px #6366f1;
-            transition: transform 0.1s ease;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-        }
-
-        /* Presets */
-        .preset-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 600px) {
-            .preset-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
+        /* PRESETS */
+        .preset-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:26px; }
         .preset-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            transition: var(--transition);
+            background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--t2);
+            padding:10px 6px;border-radius:var(--r-md);font-size:.78rem;font-weight:600;
+            cursor:pointer;text-align:center;transition:all var(--fast) var(--ease);
+            font-family:inherit;position:relative;overflow:hidden;
         }
+        .preset-btn::before { content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity var(--fast) var(--ease); }
+        .preset-btn span { position:relative;z-index:1; }
+        .preset-btn:hover { border-color:var(--p1);color:white;box-shadow:0 0 14px rgba(99,102,241,.2); }
+        .preset-btn:hover::before { opacity:.2; }
+        .preset-btn.active { border-color:var(--p1);color:white; }
+        .preset-btn.active::before { opacity:.3; }
 
-        .preset-btn:hover {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: var(--accent-primary);
-            color: white;
+        /* SLIDER */
+        .slider-wrap { margin-bottom:26px; }
+        .slider-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:14px; }
+        .slider-val {
+            font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--p1);
+            background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.2);
+            padding:2px 12px;border-radius:var(--r-sm);min-width:56px;text-align:center;
         }
+        input[type="range"] { -webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.08);outline:none;cursor:pointer; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#6366f1;
+            cursor:pointer;box-shadow:0 0 0 4px rgba(99,102,241,.2),0 0 20px rgba(99,102,241,.5);
+            transition:all var(--fast) var(--bounce);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.15);box-shadow:0 0 0 6px rgba(99,102,241,.25),0 0 30px rgba(99,102,241,.6); }
+        input[type="range"]::-moz-range-thumb { width:24px;height:24px;border-radius:50%;background:#6366f1;cursor:pointer;border:none; }
 
-        /* Checkboxes Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
+        /* TOGGLES */
+        .opts-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:26px; }
+        .toggle-card {
+            display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.025);
+            border:1px solid var(--border);padding:14px;border-radius:var(--r-md);
+            cursor:pointer;user-select:none;transition:all var(--fast) var(--ease);position:relative;overflow:hidden;
         }
+        .toggle-card:hover { background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15); }
+        .toggle-card.active { background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.35); }
+        .toggle-card input[type="checkbox"] { display:none; }
+        .check-box { width:22px;height:22px;border-radius:6px;border:2px solid var(--t3);display:flex;align-items:center;justify-content:center;transition:all var(--fast) var(--ease);flex-shrink:0; }
+        .toggle-card.active .check-box { background:var(--p1);border-color:var(--p1);box-shadow:0 0 12px rgba(99,102,241,.4); }
+        .toggle-card.active .check-box::after { content:'';display:block;width:5px;height:9px;border:2px solid white;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px); }
+        .toggle-icon { font-size:1.1rem;opacity:.8; }
+        .toggle-txt .lbl { font-size:.85rem;font-weight:600;color:var(--t1); }
+        .toggle-txt .desc { font-size:.72rem;color:var(--t3);margin-top:2px; }
+        .full-col { grid-column:span 2; }
 
-        @media (max-width: 600px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
+        /* GENERATE BUTTON */
+        .gen-row { display:flex;gap:12px;align-items:stretch; }
+        .batch-box { display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r-md);padding:0 16px;flex-shrink:0; }
+        .batch-box label { font-size:.78rem;color:var(--t3);white-space:nowrap; }
+        .batch-box select { background:transparent;color:white;border:none;font-size:1rem;font-weight:700;font-family:'JetBrains Mono',monospace;outline:none;cursor:pointer;padding:0 4px; }
+        .btn-gen {
+            flex:1;background:var(--grad);border:none;color:white;padding:16px 24px;
+            font-size:1rem;font-weight:700;font-family:inherit;border-radius:var(--r-md);cursor:pointer;
+            box-shadow:0 8px 24px rgba(99,102,241,.4),0 0 0 1px rgba(255,255,255,.1) inset;
+            transition:all var(--mid) var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;
         }
+        .btn-gen::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 50%); }
+        .btn-gen svg { width:20px;height:20px;fill:currentColor;flex-shrink:0; }
+        .btn-gen:hover { transform:translateY(-2px);box-shadow:0 14px 32px rgba(99,102,241,.55),0 0 0 1px rgba(255,255,255,.12) inset; }
+        .btn-gen:active { transform:translateY(0) scale(.98); }
+        .btn-gen.loading { pointer-events:none; }
+        .btn-gen.loading .btn-text { opacity:0; }
+        .btn-spinner { display:none;width:22px;height:22px;border:2.5px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;position:absolute; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .btn-gen.loading .btn-spinner { display:block; }
 
-        .custom-toggle {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            padding: 12px 14px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            user-select: none;
-            transition: var(--transition);
-        }
+        /* BATCH LIST */
+        .batch-results { margin-top:20px;display:none; }
+        .batch-list { display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px; }
+        .batch-item { display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);padding:10px 14px;border-radius:var(--r-sm);transition:border-color var(--fast) var(--ease);gap:10px; }
+        .batch-item:hover { border-color:rgba(99,102,241,.3); }
+        .batch-item-pwd { font-family:'JetBrains Mono',monospace;font-size:.88rem;color:#cbd5e1;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+        .mini-copy { background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--t2);border-radius:var(--r-xs);padding:4px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--fast) var(--ease);flex-shrink:0; }
+        .mini-copy:hover { background:rgba(99,102,241,.25);border-color:var(--p1);color:white; }
 
-        .custom-toggle:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
+        /* SIDEBAR */
+        .sidebar { display:flex;flex-direction:column;gap:20px; }
+        .stats-row { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px; }
+        .stat-box { background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r-md);padding:16px;text-align:center;transition:border-color var(--mid) var(--ease); }
+        .stat-box:hover { border-color:rgba(99,102,241,.3); }
+        .stat-num { font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:6px; }
+        .stat-lbl { font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;font-weight:600; }
+        .hist-head { display:flex;justify-content:space-between;align-items:center;margin:4px 0 14px; }
+        .hist-count { font-size:.72rem;color:var(--t3);font-weight:600;background:rgba(255,255,255,.05);padding:3px 10px;border-radius:20px; }
+        .hist-list { display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;padding-right:4px; }
+        .hist-item { background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:all var(--fast) var(--ease);cursor:default; }
+        .hist-item:hover { background:rgba(255,255,255,.05);border-color:rgba(99,102,241,.25);transform:translateX(2px); }
+        .hist-pwd { font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#cbd5e1;max-width:165px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+        .hist-meta { display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--t3);margin-top:3px; }
+        .hist-strength { font-weight:700; }
+        .hist-copy { background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--t2);border-radius:var(--r-xs);padding:5px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--fast) var(--ease);flex-shrink:0; }
+        .hist-copy:hover { background:rgba(99,102,241,.25);border-color:var(--p1);color:white; }
+        .empty-hist { text-align:center;color:var(--t3);padding:40px 10px;font-size:.85rem; }
+        .empty-hist svg { width:40px;height:40px;fill:var(--t4);margin-bottom:12px;display:block;margin:0 auto 12px; }
+        .hist-actions { display:flex;gap:8px;margin-top:14px; }
+        .btn-action { flex:1;background:transparent;border:1px solid var(--border);color:var(--t2);padding:9px 10px;border-radius:var(--r-sm);font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--fast) var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:5px;text-decoration:none; }
+        .btn-action:hover { border-color:var(--t2);color:white;background:rgba(255,255,255,.05); }
+        .btn-action.danger { border-color:rgba(239,68,68,.3);color:#fca5a5; }
+        .btn-action.danger:hover { background:rgba(239,68,68,.12);border-color:var(--red);color:white; }
+        .btn-action svg { width:14px;height:14px;fill:currentColor; }
 
-        .custom-toggle input[type="checkbox"] {
-            display: none;
-        }
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width:5px;height:5px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1);border-radius:3px; }
+        ::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,.2); }
 
-        .toggle-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 5px;
-            border: 2px solid var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            flex-shrink: 0;
+        /* TOAST */
+        #toast {
+            position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:rgba(20,28,52,.95);backdrop-filter:blur(20px);color:white;
+            padding:13px 24px;border-radius:40px;border:1px solid rgba(99,102,241,.35);
+            box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) inset;
+            display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:600;
+            opacity:0;transition:all var(--mid) var(--bounce);pointer-events:none;z-index:999;white-space:nowrap;
         }
+        #toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
 
-        .custom-toggle input[type="checkbox"]:checked + .toggle-box {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-        }
+        /* FOOTER */
+        footer { text-align:center;padding:28px;color:var(--t4);font-size:.78rem;border-top:1px solid var(--border);position:relative;z-index:1; }
+        footer span { color:var(--t3); }
 
-        .custom-toggle input[type="checkbox"]:checked + .toggle-box::after {
-            content: '✓';
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-        }
+        /* MOBILE NAV */
+        .mobile-nav { display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(8,12,22,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom)); }
+        .mobile-nav-inner { display:flex;justify-content:center;gap:8px;padding:0 16px; }
+        .nav-tab { flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:var(--r-md);background:transparent;border:none;color:var(--t3);font-family:inherit;font-size:.65rem;font-weight:600;cursor:pointer;transition:all var(--fast) var(--ease);text-transform:uppercase;letter-spacing:.05em; }
+        .nav-tab svg { width:22px;height:22px;fill:currentColor; }
+        .nav-tab.active { color:var(--p1);background:rgba(99,102,241,.1); }
+        .nav-badge { display:inline-block;background:var(--p1);color:white;font-size:.6rem;font-weight:700;border-radius:10px;padding:1px 6px;line-height:1.4;margin-top:2px; }
 
-        .toggle-label {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
+        /* MOBILE GEN BAR */
+        .mobile-quick-bar { display:none;position:fixed;bottom:80px;left:16px;right:16px;z-index:199; }
+        .mobile-gen-btn { width:100%;background:var(--grad);border:none;color:white;padding:17px;font-size:1rem;font-weight:700;font-family:inherit;border-radius:var(--r-lg);cursor:pointer;box-shadow:0 10px 30px rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center;gap:10px;transition:all var(--mid) var(--ease); }
+        .mobile-gen-btn svg { width:20px;height:20px;fill:currentColor; }
 
-        .toggle-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: block;
+        /* RESPONSIVE */
+        @media (max-width:900px) {
+            main { grid-template-columns:1fr;padding:20px 16px 180px;gap:16px; }
+            .mobile-nav { display:flex; }
+            .mobile-quick-bar { display:block; }
+            .panel { display:none; }
+            .panel.active { display:block; }
+            .sidebar { display:none; }
+            .sidebar.active { display:flex; }
+            .gen-row .btn-gen { display:none; }
+            .batch-box { display:none; }
+            .preset-grid { grid-template-columns:repeat(2,1fr); }
+            .opts-grid { grid-template-columns:1fr; }
+            .full-col { grid-column:span 1; }
+            header { padding:0 16px; }
+            .header-inner { height:60px; }
+            .brand-name { font-size:1.15rem; }
+            .live-badge { display:none; }
+            .hist-list { max-height:55vh; }
+            .stat-num { font-size:1.6rem; }
         }
-
-        /* Primary action button */
-        .btn-generate {
-            width: 100%;
-            background: var(--accent-gradient);
-            border: none;
-            color: white;
-            padding: 16px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .btn-generate:active {
-            transform: translateY(0);
-        }
-
-        /* Multiple Passwords Preview */
-        .multiple-results {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .multiple-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-            padding-right: 4px;
-        }
-
-        .multiple-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-        }
-
-        .multiple-copy-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            transition: var(--transition);
-        }
-
-        .multiple-copy-btn:hover {
-            color: white;
-        }
-
-        /* Sidebar Stats & History */
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #38bdf8;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .history-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 10px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: var(--transition);
-        }
-
-        .history-item:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .history-pass {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            max-width: 170px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .history-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        .mini-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: var(--text-secondary);
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .mini-btn:hover {
-            background: rgba(99, 102, 241, 0.3);
-            color: white;
-        }
-
-        .history-footer {
-            display: flex;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .btn-outline {
-            flex: 1;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-outline:hover {
-            border-color: var(--text-secondary);
-            color: white;
-        }
-
-        .btn-danger-outline {
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-        }
-
-        .btn-danger-outline:hover {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: #ef4444;
-            color: white;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
-        }
+        @media (max-width:500px) { .card { padding:20px 16px; } #passwordDisplay { font-size:.95rem; } }
     </style>
 </head>
 <body>
 
-    <header>
+<div class="bg-canvas">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<header>
+    <div class="header-inner">
         <a href="/" class="brand">
             <div class="brand-icon">
                 <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
             </div>
-            <div class="brand-text">
-                <h1>CipherForge</h1>
-                <p>Enterprise-Grade Password Engine</p>
+            <div>
+                <div class="brand-name">CipherForge</div>
+                <div class="brand-tagline">Enterprise Password Engine</div>
             </div>
         </a>
-        <div class="status-badge">
-            <span class="pulse-dot"></span>
-            <span>Live Security Engine</span>
+        <div>
+            <div class="live-badge">
+                <span class="pulse"></span>
+                <span>Live Security Engine</span>
+            </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <main>
-        <!-- Left: Password Generator -->
+<main>
+    <!-- Generator Panel -->
+    <div class="panel active" id="generatorPanel">
         <div class="card">
-            <!-- Display Box -->
-            <div class="password-display-card">
-                <div id="passwordDisplay" class="password-val">Generating...</div>
-                <div class="display-actions">
-                    <button id="copyBtn" class="btn-icon" title="Copy to clipboard">
-                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                    </button>
-                    <button id="regenerateBtn" class="btn-icon" title="Generate New">
-                        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                    </button>
+            <div class="pwd-box" id="pwdBox">
+                <div class="pwd-label">Generated Password</div>
+                <div class="pwd-row">
+                    <div id="passwordDisplay" title="Click to copy">Generating...</div>
+                    <div class="pwd-actions">
+                        <button class="icon-btn" id="copyBtn" title="Copy">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                        <button class="icon-btn" id="regenerateBtn" title="Regenerate">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Strength Meter -->
-            <div class="strength-indicator">
-                <div class="strength-header">
-                    <span style="color: var(--text-secondary);">Security Level:</span>
-                    <span id="strengthBadge" class="strength-badge">Analyzing</span>
+            <div class="entropy-bar">
+                <div class="entropy-header">
+                    <span class="entropy-label">Security Level</span>
+                    <span id="strengthPill" class="strength-pill pill-strong">Analyzing</span>
                 </div>
-                <div class="strength-meter-bar">
-                    <div id="bar1" class="bar-segment"></div>
-                    <div id="bar2" class="bar-segment"></div>
-                    <div id="bar3" class="bar-segment"></div>
-                    <div id="bar4" class="bar-segment"></div>
-                    <div id="bar5" class="bar-segment"></div>
-                    <div id="bar6" class="bar-segment"></div>
+                <div class="bar-track" id="barTrack">
+                    <div class="bar-seg" id="b1"></div><div class="bar-seg" id="b2"></div>
+                    <div class="bar-seg" id="b3"></div><div class="bar-seg" id="b4"></div>
+                    <div class="bar-seg" id="b5"></div><div class="bar-seg" id="b6"></div>
                 </div>
-                <div id="feedbackContainer" class="feedback-chips"></div>
+                <div class="feedback-row" id="feedbackRow"></div>
             </div>
 
-            <!-- Presets -->
-            <div class="section-title">Quick Presets</div>
+            <div class="sec-label">Quick Presets</div>
             <div class="preset-grid">
-                <button class="preset-btn" onclick="applyPreset('pin')">PIN (6-Digit)</button>
-                <button class="preset-btn" onclick="applyPreset('standard')">Standard (12)</button>
-                <button class="preset-btn" onclick="applyPreset('strong')">Strong (16)</button>
-                <button class="preset-btn" onclick="applyPreset('paranoid')">Extreme (32)</button>
+                <button class="preset-btn" id="pr-pin" onclick="applyPreset('pin')"><span>&#x1F522; PIN (6)</span></button>
+                <button class="preset-btn" id="pr-standard" onclick="applyPreset('standard')"><span>&#x1F511; Standard (12)</span></button>
+                <button class="preset-btn active" id="pr-strong" onclick="applyPreset('strong')"><span>&#x1F4AA; Strong (16)</span></button>
+                <button class="preset-btn" id="pr-paranoid" onclick="applyPreset('paranoid')"><span>&#x1F6E1;&#xFE0F; Extreme (32)</span></button>
             </div>
 
-            <!-- Length Slider -->
-            <div class="length-control">
+            <div class="slider-wrap">
                 <div class="slider-header">
-                    <span class="section-title" style="margin-bottom: 0;">Password Length</span>
-                    <span id="lengthValue" class="length-number">16</span>
+                    <span class="sec-label" style="margin-bottom:0">Password Length</span>
+                    <span id="lengthValue" class="slider-val">16</span>
                 </div>
-                <input type="range" id="lengthSlider" min="4" max="64" value="16">
+                <input type="range" id="lengthSlider" min="4" max="64" value="16" aria-label="Password length">
             </div>
 
-            <!-- Options -->
-            <div class="section-title">Character Sets</div>
-            <div class="options-grid">
-                <label class="custom-toggle">
+            <div class="sec-label">Character Sets</div>
+            <div class="opts-grid">
+                <label class="toggle-card active" id="card-upper">
                     <input type="checkbox" id="optUppercase" checked>
-                    <div class="toggle-box"></div>
-                    <div>
-                        <span class="toggle-label">Uppercase Letters</span>
-                        <span class="toggle-desc">A-Z (e.g. ABCDEF)</span>
-                    </div>
+                    <div class="check-box"></div>
+                    <span class="toggle-icon">&#x1F520;</span>
+                    <div class="toggle-txt"><div class="lbl">Uppercase</div><div class="desc">A-Z letters</div></div>
                 </label>
-
-                <label class="custom-toggle">
+                <label class="toggle-card active" id="card-lower">
                     <input type="checkbox" id="optLowercase" checked>
-                    <div class="toggle-box"></div>
-                    <div>
-                        <span class="toggle-label">Lowercase Letters</span>
-                        <span class="toggle-desc">a-z (e.g. abcdef)</span>
-                    </div>
+                    <div class="check-box"></div>
+                    <span class="toggle-icon">&#x1F521;</span>
+                    <div class="toggle-txt"><div class="lbl">Lowercase</div><div class="desc">a-z letters</div></div>
                 </label>
-
-                <label class="custom-toggle">
+                <label class="toggle-card active" id="card-digits">
                     <input type="checkbox" id="optDigits" checked>
-                    <div class="toggle-box"></div>
-                    <div>
-                        <span class="toggle-label">Numbers / Digits</span>
-                        <span class="toggle-desc">0-9 (e.g. 123456)</span>
-                    </div>
+                    <div class="check-box"></div>
+                    <span class="toggle-icon">&#x1F522;</span>
+                    <div class="toggle-txt"><div class="lbl">Digits</div><div class="desc">0-9 numbers</div></div>
                 </label>
-
-                <label class="custom-toggle">
+                <label class="toggle-card active" id="card-symbols">
                     <input type="checkbox" id="optSymbols" checked>
-                    <div class="toggle-box"></div>
-                    <div>
-                        <span class="toggle-label">Special Symbols</span>
-                        <span class="toggle-desc">!@#$%^&*()_+</span>
-                    </div>
+                    <div class="check-box"></div>
+                    <span class="toggle-icon">&#x2733;&#xFE0F;</span>
+                    <div class="toggle-txt"><div class="lbl">Symbols</div><div class="desc">!@#$%^&amp;*</div></div>
                 </label>
-
-                <label class="custom-toggle" style="grid-column: span 2;">
+                <label class="toggle-card full-col" id="card-exclude">
                     <input type="checkbox" id="optExcludeSimilar">
-                    <div class="toggle-box"></div>
-                    <div>
-                        <span class="toggle-label">Exclude Similar Characters</span>
-                        <span class="toggle-desc">Avoid confusing characters (i, l, 1, L, o, 0, O)</span>
-                    </div>
+                    <div class="check-box"></div>
+                    <span class="toggle-icon">&#x1F6AB;</span>
+                    <div class="toggle-txt"><div class="lbl">Exclude Similar Characters</div><div class="desc">Avoids i, l, 1, L, o, 0, O confusion</div></div>
                 </label>
             </div>
 
-            <!-- Batch Count & Generate Button -->
-            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
-                <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px;">
-                    <span style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">Batch Count:</span>
-                    <select id="batchCount" style="background: transparent; color: white; border: none; font-size: 0.95rem; font-weight: 600; outline: none; cursor: pointer;">
-                        <option value="1" style="background: #1e293b;">1</option>
-                        <option value="3" style="background: #1e293b;">3</option>
-                        <option value="5" style="background: #1e293b;">5</option>
-                        <option value="10" style="background: #1e293b;">10</option>
+            <div class="gen-row">
+                <div class="batch-box">
+                    <label for="batchCount">Batch</label>
+                    <select id="batchCount">
+                        <option value="1" style="background:#111827">1</option>
+                        <option value="3" style="background:#111827">3</option>
+                        <option value="5" style="background:#111827">5</option>
+                        <option value="10" style="background:#111827">10</option>
                     </select>
                 </div>
-
-                <button id="mainGenerateBtn" class="btn-generate">
-                    <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
-                    <span>Generate Secure Password</span>
+                <button id="mainGenerateBtn" class="btn-gen">
+                    <div class="btn-spinner"></div>
+                    <svg class="btn-text" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    <span class="btn-text">Generate Secure Password</span>
                 </button>
             </div>
 
-            <!-- Multiple Passwords List (Batch mode) -->
-            <div id="multipleContainer" class="multiple-results">
-                <div class="section-title">Batch Generated Passwords</div>
-                <div id="multipleList" class="multiple-list"></div>
+            <div id="batchContainer" class="batch-results">
+                <div class="sec-label" style="margin-top:20px">Batch Results</div>
+                <div id="batchList" class="batch-list"></div>
             </div>
         </div>
-
-        <!-- Right: Stats & History -->
-        <div class="sidebar">
-            <div class="card">
-                <div class="section-title">Generation Insights</div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div id="statTotal" class="stat-number">0</div>
-                        <div class="stat-label">Total Created</div>
-                    </div>
-                    <div class="stat-card">
-                        <div id="statAvgLen" class="stat-number">0</div>
-                        <div class="stat-label">Avg Length</div>
-                    </div>
-                </div>
-
-                <div class="section-title" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>Recent History</span>
-                    <span id="historyCountBadge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">0 entries</span>
-                </div>
-
-                <div id="historyList" class="history-list">
-                    <div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.85rem;">
-                        No history yet. Generated passwords will be listed here.
-                    </div>
-                </div>
-
-                <div class="history-footer">
-                    <button id="clearHistoryBtn" class="btn-outline btn-danger-outline">Clear History</button>
-                    <a href="/api/export/json" download="password_history.json" class="btn-outline">Export JSON</a>
-                    <a href="/api/export/csv" download="password_history.csv" class="btn-outline">Export CSV</a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="toast" class="toast">
-        <span id="toastMessage">Copied to clipboard!</span>
     </div>
 
-    <footer>
-        CipherForge Password Engine &bull; Protected with SHA-256 / Cryptographically Secure Randomization &bull; Ready for Cloud Deployment
-    </footer>
+    <!-- Sidebar -->
+    <div class="sidebar" id="historyPanel">
+        <div class="card">
+            <div class="sec-label">Generation Insights</div>
+            <div class="stats-row">
+                <div class="stat-box"><div id="statTotal" class="stat-num">0</div><div class="stat-lbl">Total Created</div></div>
+                <div class="stat-box"><div id="statAvgLen" class="stat-num">0</div><div class="stat-lbl">Avg Length</div></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="hist-head">
+                <div class="sec-label" style="margin-bottom:0">Recent History</div>
+                <span id="histCountBadge" class="hist-count">0 entries</span>
+            </div>
+            <div id="histList" class="hist-list">
+                <div class="empty-hist">
+                    <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                    <div>No history yet.<br>Generated passwords appear here.</div>
+                </div>
+            </div>
+            <div class="hist-actions">
+                <button id="clearHistoryBtn" class="btn-action danger">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Clear
+                </button>
+                <a href="/api/export/json" download="password_history.json" class="btn-action">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>JSON
+                </a>
+                <a href="/api/export/csv" download="password_history.csv" class="btn-action">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 11h8v1H8zm0 2h8v1H8zm0 2h5v1H8z"/></svg>CSV
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
 
-    <script>
-        const lengthSlider = document.getElementById('lengthSlider');
-        const lengthValue = document.getElementById('lengthValue');
-        const optUppercase = document.getElementById('optUppercase');
-        const optLowercase = document.getElementById('optLowercase');
-        const optDigits = document.getElementById('optDigits');
-        const optSymbols = document.getElementById('optSymbols');
-        const optExcludeSimilar = document.getElementById('optExcludeSimilar');
-        const batchCount = document.getElementById('batchCount');
+<div id="toast">
+    <span id="toastIcon">&#x2705;</span>
+    <span id="toastMsg">Copied!</span>
+</div>
 
-        const passwordDisplay = document.getElementById('passwordDisplay');
-        const strengthBadge = document.getElementById('strengthBadge');
-        const feedbackContainer = document.getElementById('feedbackContainer');
-        const copyBtn = document.getElementById('copyBtn');
-        const regenerateBtn = document.getElementById('regenerateBtn');
-        const mainGenerateBtn = document.getElementById('mainGenerateBtn');
+<nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+        <button class="nav-tab active" id="tab-gen" onclick="switchTab('gen')">
+            <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            Generate
+        </button>
+        <button class="nav-tab" id="tab-hist" onclick="switchTab('hist')">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            History
+            <span class="nav-badge" id="mobileHistBadge" style="display:none">0</span>
+        </button>
+    </div>
+</nav>
 
-        const multipleContainer = document.getElementById('multipleContainer');
-        const multipleList = document.getElementById('multipleList');
+<div class="mobile-quick-bar" id="mobileGenBar">
+    <button class="mobile-gen-btn" id="mobileGenBtn">
+        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+        Generate Secure Password
+    </button>
+</div>
 
-        const historyList = document.getElementById('historyList');
-        const historyCountBadge = document.getElementById('historyCountBadge');
-        const statTotal = document.getElementById('statTotal');
-        const statAvgLen = document.getElementById('statAvgLen');
-        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
+<footer><span>CipherForge</span> &bull; Cryptographically Secure &bull; SHA-256 Entropy &bull; Cloud-Ready</footer>
 
-        // Length slider sync
-        lengthSlider.addEventListener('input', (e) => {
-            lengthValue.textContent = e.target.value;
-        });
+<script>
+    const el = id => document.getElementById(id);
+    const lengthSlider=el('lengthSlider'),lengthValue=el('lengthValue');
+    const optUppercase=el('optUppercase'),optLowercase=el('optLowercase');
+    const optDigits=el('optDigits'),optSymbols=el('optSymbols'),optExclude=el('optExcludeSimilar');
+    const batchCount=el('batchCount');
+    const pwdDisplay=el('passwordDisplay'),pwdBox=el('pwdBox');
+    const strengthPill=el('strengthPill'),barTrack=el('barTrack'),feedbackRow=el('feedbackRow');
+    const copyBtn=el('copyBtn'),regenBtn=el('regenerateBtn'),mainGenBtn=el('mainGenerateBtn');
+    const mobileGenBtn=el('mobileGenBtn');
+    const batchContainer=el('batchContainer'),batchList=el('batchList');
+    const histList=el('histList'),histCountBadge=el('histCountBadge');
+    const statTotal=el('statTotal'),statAvgLen=el('statAvgLen');
+    const clearHistBtn=el('clearHistoryBtn');
+    const toast=el('toast'),toastMsg=el('toastMsg'),toastIcon=el('toastIcon');
+    const mobileHistBadge=el('mobileHistBadge');
 
-        // Toast Helper
-        function showToast(msg) {
-            toastMessage.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
+    // Toggle card sync
+    document.querySelectorAll('.toggle-card').forEach(card => {
+        const cb = card.querySelector('input[type="checkbox"]');
+        if(cb){ const s=()=>card.classList.toggle('active',cb.checked); cb.addEventListener('change',s); s(); }
+    });
+
+    // Slider fill
+    function updateSliderFill(){
+        const pct=(lengthSlider.value-lengthSlider.min)/(lengthSlider.max-lengthSlider.min)*100;
+        lengthSlider.style.background=`linear-gradient(to right,#6366f1 ${pct}%,rgba(255,255,255,.08) ${pct}%)`;
+        lengthValue.textContent=lengthSlider.value;
+    }
+    lengthSlider.addEventListener('input',updateSliderFill);
+    updateSliderFill();
+
+    // Toast
+    let toastTimer;
+    function showToast(msg,icon='&#x2705;'){
+        clearTimeout(toastTimer);
+        toastMsg.textContent=msg; toastIcon.innerHTML=icon;
+        toast.classList.add('show');
+        toastTimer=setTimeout(()=>toast.classList.remove('show'),2600);
+    }
+
+    // Copy
+    function copyToClipboard(text,btn){
+        if(!text||text==='Generating...'||text==='Error â€” try again')return;
+        const doIt=()=>{
+            if(btn){btn.classList.add('copied');setTimeout(()=>btn.classList.remove('copied'),1400);}
+            showToast('Password copied!','&#x1F4CB;');
+        };
+        if(navigator.clipboard){navigator.clipboard.writeText(text).then(doIt).catch(()=>legacyCopy(text,doIt));}
+        else legacyCopy(text,doIt);
+    }
+    function legacyCopy(text,cb){
+        const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';
+        document.body.appendChild(ta);ta.select();
+        try{document.execCommand('copy');cb&&cb();}catch(e){}
+        document.body.removeChild(ta);
+    }
+    copyBtn.addEventListener('click',()=>copyToClipboard(pwdDisplay.textContent,copyBtn));
+    pwdDisplay.addEventListener('click',()=>copyToClipboard(pwdDisplay.textContent,copyBtn));
+
+    // Presets
+    function applyPreset(type){
+        document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+        el('pr-'+type)?.classList.add('active');
+        const c={pin:{len:6,u:false,l:false,d:true,s:false,x:false},standard:{len:12,u:true,l:true,d:true,s:true,x:false},strong:{len:16,u:true,l:true,d:true,s:true,x:false},paranoid:{len:32,u:true,l:true,d:true,s:true,x:true}}[type];
+        if(!c)return;
+        lengthSlider.value=c.len;optUppercase.checked=c.u;optLowercase.checked=c.l;optDigits.checked=c.d;optSymbols.checked=c.s;optExclude.checked=c.x;
+        document.querySelectorAll('.toggle-card').forEach(card=>{const cb=card.querySelector('input[type="checkbox"]');if(cb)card.classList.toggle('active',cb.checked);});
+        updateSliderFill();generatePassword();
+    }
+
+    // Strength UI
+    function renderStrength(data){
+        const score=data.score||0,strength=data.strength||'Weak';
+        const segs=barTrack.querySelectorAll('.bar-seg');
+        barTrack.className='bar-track';strengthPill.className='strength-pill';
+        const cls={Weak:'weak',Medium:'medium',Strong:'strong'}[strength]||'weak';
+        const pillCls={Weak:'pill-weak',Medium:'pill-medium',Strong:'pill-strong'}[strength]||'pill-weak';
+        barTrack.classList.add('strength-'+cls);strengthPill.classList.add(pillCls);
+        strengthPill.textContent=strength;
+        segs.forEach((seg,i)=>seg.classList.toggle('lit',i<score));
+        feedbackRow.innerHTML='';
+        if(data.feedback&&data.feedback.length){
+            data.feedback.forEach(f=>{const c=document.createElement('span');c.className='chip';c.textContent='&#x1F4A1; '+f;feedbackRow.appendChild(c);});
+        }else{
+            const c=document.createElement('span');c.className='chip';c.style.cssText='border-color:rgba(16,185,129,.3);color:#34d399';c.textContent='&#x1F6E1;&#xFE0F; High entropy & maximum security';feedbackRow.appendChild(c);
         }
+    }
 
-        // Copy Helper
-        function copyToClipboard(text) {
-            if (!text || text === 'Generating...') return;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Password copied to clipboard!');
-            }).catch(() => {
-                // fallback
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showToast('Password copied to clipboard!');
-            });
-        }
-
-        copyBtn.addEventListener('click', () => {
-            copyToClipboard(passwordDisplay.textContent);
-        });
-
-        // Quick Presets
-        function applyPreset(type) {
-            if (type === 'pin') {
-                lengthSlider.value = 6;
-                lengthValue.textContent = 6;
-                optUppercase.checked = false;
-                optLowercase.checked = false;
-                optDigits.checked = true;
-                optSymbols.checked = false;
-                optExcludeSimilar.checked = false;
-            } else if (type === 'standard') {
-                lengthSlider.value = 12;
-                lengthValue.textContent = 12;
-                optUppercase.checked = true;
-                optLowercase.checked = true;
-                optDigits.checked = true;
-                optSymbols.checked = true;
-                optExcludeSimilar.checked = false;
-            } else if (type === 'strong') {
-                lengthSlider.value = 16;
-                lengthValue.textContent = 16;
-                optUppercase.checked = true;
-                optLowercase.checked = true;
-                optDigits.checked = true;
-                optSymbols.checked = true;
-                optExcludeSimilar.checked = false;
-            } else if (type === 'paranoid') {
-                lengthSlider.value = 32;
-                lengthValue.textContent = 32;
-                optUppercase.checked = true;
-                optLowercase.checked = true;
-                optDigits.checked = true;
-                optSymbols.checked = true;
-                optExcludeSimilar.checked = true;
-            }
-            generatePassword();
-        }
-
-        // Render Strength UI
-        function updateStrengthUI(strengthData) {
-            const score = strengthData.score || 0;
-            const strength = strengthData.strength || 'Weak';
-            
-            strengthBadge.textContent = strength;
-            
-            let barColor = '#ef4444';
-            let badgeBg = 'rgba(239, 68, 68, 0.15)';
-            let badgeColor = '#ef4444';
-
-            if (strength === 'Strong') {
-                barColor = '#10b981';
-                badgeBg = 'rgba(16, 185, 129, 0.15)';
-                badgeColor = '#34d399';
-            } else if (strength === 'Medium') {
-                barColor = '#f59e0b';
-                badgeBg = 'rgba(245, 158, 11, 0.15)';
-                badgeColor = '#fbbf24';
-            }
-
-            strengthBadge.style.background = badgeBg;
-            strengthBadge.style.color = badgeColor;
-
-            for (let i = 1; i <= 6; i++) {
-                const bar = document.getElementById('bar' + i);
-                if (i <= score) {
-                    bar.style.background = barColor;
-                } else {
-                    bar.style.background = 'rgba(255, 255, 255, 0.08)';
-                }
-            }
-
-            // Feedback chips
-            feedbackContainer.innerHTML = '';
-            if (strengthData.feedback && strengthData.feedback.length > 0) {
-                strengthData.feedback.forEach(item => {
-                    const chip = document.createElement('span');
-                    chip.className = 'chip';
-                    chip.textContent = '💡 ' + item;
-                    feedbackContainer.appendChild(chip);
-                });
-            } else {
-                const chip = document.createElement('span');
-                chip.className = 'chip';
-                chip.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                chip.style.color = '#34d399';
-                chip.textContent = '🛡️ High entropy & maximum security';
-                feedbackContainer.appendChild(chip);
-            }
-        }
-
-        // Generate Password via API
-        async function generatePassword() {
-            const count = parseInt(batchCount.value, 10);
-            const payload = {
-                length: parseInt(lengthSlider.value, 10),
-                use_uppercase: optUppercase.checked,
-                use_lowercase: optLowercase.checked,
-                use_digits: optDigits.checked,
-                use_symbols: optSymbols.checked,
-                exclude_similar: optExcludeSimilar.checked,
-                count: count
-            };
-
-            try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    showToast(data.error || 'Generation failed');
-                    return;
-                }
-
-                if (data.passwords && data.passwords.length > 0) {
-                    passwordDisplay.textContent = data.passwords[0];
-                    updateStrengthUI(data.strength);
-
-                    if (count > 1) {
-                        multipleContainer.style.display = 'block';
-                        multipleList.innerHTML = '';
-                        data.passwords.forEach(pwd => {
-                            const item = document.createElement('div');
-                            item.className = 'multiple-item';
-                            item.innerHTML = `
-                                <span>${pwd}</span>
-                                <button class="multiple-copy-btn" title="Copy">
-                                    <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                                </button>
-                            `;
-                            item.querySelector('.multiple-copy-btn').addEventListener('click', () => copyToClipboard(pwd));
-                            multipleList.appendChild(item);
-                        });
-                    } else {
-                        multipleContainer.style.display = 'none';
-                    }
-
-                    // Refresh history and stats
-                    fetchHistory();
-                    fetchStats();
-                }
-            } catch (err) {
-                console.error(err);
-                showToast('Network error while generating password');
-            }
-        }
-
-        // Fetch History
-        async function fetchHistory() {
-            try {
-                const res = await fetch('/api/history?limit=15');
-                const data = await res.json();
-                
-                if (data.history && data.history.length > 0) {
-                    historyList.innerHTML = '';
-                    const reversed = [...data.history].reverse();
-                    historyCountBadge.textContent = `${data.history.length} entries`;
-
-                    reversed.forEach((entry, idx) => {
-                        const item = document.createElement('div');
-                        item.className = 'history-item';
-                        
-                        let badgeColor = '#ef4444';
-                        if (entry.strength === 'Strong') badgeColor = '#34d399';
-                        else if (entry.strength === 'Medium') badgeColor = '#fbbf24';
-
-                        const formattedDate = new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        item.innerHTML = `
-                            <div>
-                                <div class="history-pass" title="${entry.password}">${entry.password}</div>
-                                <div class="history-meta">
-                                    <span style="color: ${badgeColor}; font-weight: 600;">${entry.strength || 'N/A'}</span>
-                                    <span>&bull;</span>
-                                    <span>${entry.length} chars</span>
-                                    <span>&bull;</span>
-                                    <span>${formattedDate}</span>
-                                </div>
-                            </div>
-                            <div class="history-actions">
-                                <button class="mini-btn copy-hist-btn" title="Copy">Copy</button>
-                            </div>
-                        `;
-
-                        item.querySelector('.copy-hist-btn').addEventListener('click', () => {
-                            copyToClipboard(entry.password);
-                        });
-
-                        historyList.appendChild(item);
+    // Generate
+    async function generatePassword(){
+        const count=parseInt(batchCount.value,10);
+        mainGenBtn.classList.add('loading');
+        if(mobileGenBtn)mobileGenBtn.disabled=true;
+        pwdDisplay.classList.add('generating');pwdDisplay.textContent='Generating...';
+        const payload={length:parseInt(lengthSlider.value,10),use_uppercase:optUppercase.checked,use_lowercase:optLowercase.checked,use_digits:optDigits.checked,use_symbols:optSymbols.checked,exclude_similar:optExclude.checked,count};
+        try{
+            const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+            const data=await res.json();
+            if(!res.ok||!data.success){showToast(data.error||'Generation failed','&#x26A0;&#xFE0F;');pwdDisplay.textContent='Error \u2014 try again';return;}
+            if(data.passwords&&data.passwords.length){
+                pwdDisplay.textContent=data.passwords[0];renderStrength(data.strength);
+                pwdBox.classList.add('focus-glow');setTimeout(()=>pwdBox.classList.remove('focus-glow'),800);
+                if(count>1){
+                    batchContainer.style.display='block';batchList.innerHTML='';
+                    data.passwords.forEach(pwd=>{
+                        const item=document.createElement('div');item.className='batch-item';
+                        item.innerHTML=`<span class="batch-item-pwd">${pwd}</span><button class="mini-copy">Copy</button>`;
+                        item.querySelector('.mini-copy').addEventListener('click',()=>copyToClipboard(pwd));
+                        batchList.appendChild(item);
                     });
-                } else {
-                    historyCountBadge.textContent = '0 entries';
-                    historyList.innerHTML = `
-                        <div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.85rem;">
-                            No history yet. Generated passwords will be listed here.
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                console.error('Error fetching history:', err);
+                }else batchContainer.style.display='none';
+                fetchHistory();fetchStats();
             }
+        }catch(err){console.error(err);showToast('Network error','&#x26A0;&#xFE0F;');pwdDisplay.textContent='Network error';}
+        finally{mainGenBtn.classList.remove('loading');if(mobileGenBtn)mobileGenBtn.disabled=false;pwdDisplay.classList.remove('generating');}
+    }
+
+    // History
+    async function fetchHistory(){
+        try{
+            const res=await fetch('/api/history?limit=20');const data=await res.json();const hist=data.history||[];
+            const count=hist.length;
+            histCountBadge.textContent=count+(count===1?' entry':' entries');
+            if(mobileHistBadge){if(count>0){mobileHistBadge.style.display='';mobileHistBadge.textContent=count;}else mobileHistBadge.style.display='none';}
+            if(!count){histList.innerHTML='<div class="empty-hist"><svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg><div>No history yet.<br>Generated passwords appear here.</div></div>';return;}
+            histList.innerHTML='';
+            [...hist].reverse().forEach(entry=>{
+                const color={Strong:'#34d399',Medium:'#fbbf24',Weak:'#f87171'}[entry.strength]||'#f87171';
+                const time=new Date(entry.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+                const item=document.createElement('div');item.className='hist-item';
+                item.innerHTML=`<div style="flex:1;min-width:0"><div class="hist-pwd" title="${entry.password}">${entry.password}</div><div class="hist-meta"><span class="hist-strength" style="color:${color}">${entry.strength||'N/A'}</span><span>&middot;</span><span>${entry.length} chars</span><span>&middot;</span><span>${time}</span></div></div><button class="hist-copy">Copy</button>`;
+                item.querySelector('.hist-copy').addEventListener('click',()=>copyToClipboard(entry.password));
+                histList.appendChild(item);
+            });
+        }catch(err){console.error('History error:',err);}
+    }
+
+    // Stats
+    async function fetchStats(){
+        try{
+            const res=await fetch('/api/stats');const data=await res.json();
+            if(data.stats){animateNumber(statTotal,data.stats.total_generated||0);animateNumber(statAvgLen,Math.round(data.stats.average_length||0));}
+        }catch(err){console.error('Stats error:',err);}
+    }
+    function animateNumber(el,target){
+        const current=parseInt(el.textContent)||0;if(current===target)return;
+        const step=(target-current)/12;let val=current;
+        const id=setInterval(()=>{
+            val+=step;
+            if((step>0&&val>=target)||(step<0&&val<=target)){el.textContent=target;clearInterval(id);}
+            else el.textContent=Math.round(val);
+        },30);
+    }
+
+    // Clear
+    clearHistBtn.addEventListener('click',async()=>{
+        if(!confirm('Clear all password history?'))return;
+        try{await fetch('/api/clear-history',{method:'POST'});showToast('History cleared','&#x1F5D1;&#xFE0F;');fetchHistory();fetchStats();}
+        catch(e){showToast('Failed to clear history','&#x26A0;&#xFE0F;');}
+    });
+
+    regenBtn.addEventListener('click',generatePassword);
+    mainGenBtn.addEventListener('click',generatePassword);
+    if(mobileGenBtn)mobileGenBtn.addEventListener('click',generatePassword);
+
+    // Mobile tab
+    function switchTab(tab){
+        const gp=el('generatorPanel'),hp=el('historyPanel'),mb=el('mobileGenBar');
+        const tg=el('tab-gen'),th=el('tab-hist');
+        if(tab==='gen'){
+            gp.style.display='';hp.style.display='none';
+            if(mb)mb.style.display='';tg.classList.add('active');th.classList.remove('active');
+        }else{
+            gp.style.display='none';hp.style.display='flex';
+            if(mb)mb.style.display='none';th.classList.add('active');tg.classList.remove('active');
         }
+    }
 
-        // Fetch Stats
-        async function fetchStats() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                if (data.stats) {
-                    statTotal.textContent = data.stats.total_generated || 0;
-                    statAvgLen.textContent = data.stats.average_length || 0;
-                }
-            } catch (err) {
-                console.error('Error fetching stats:', err);
-            }
-        }
-
-        // Clear History
-        clearHistoryBtn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to clear your password history?')) return;
-            try {
-                await fetch('/api/clear-history', { method: 'POST' });
-                showToast('History cleared successfully');
-                fetchHistory();
-                fetchStats();
-            } catch (err) {
-                showToast('Failed to clear history');
-            }
-        });
-
-        // Event listeners
-        regenerateBtn.addEventListener('click', generatePassword);
-        mainGenerateBtn.addEventListener('click', generatePassword);
-
-        // Initial Generation on load
-        window.addEventListener('DOMContentLoaded', () => {
-            generatePassword();
-        });
-    </script>
+    window.addEventListener('DOMContentLoaded',()=>{generatePassword();fetchHistory();fetchStats();});
+</script>
 </body>
 </html>
