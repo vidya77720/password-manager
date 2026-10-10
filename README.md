@@ -26,25 +26,38 @@ password-generator/
 ├── password_generator.py    # Main password generator class
 ├── password_history.py      # Password history management system
 ├── config_manager.py        # Configuration management system
+├── web_app.py               # Flask web application (Ready for Cloud Deployment)
+├── templates/
+│   └── index.html           # Modern responsive web UI
 ├── cli.py                   # Command-line interface
-├── gui_app.py              # Graphical user interface
-├── example_usage.py         # Example usage demonstrations
-├── history_demo.py         # History feature demonstrations
-├── new_features_demo.py     # New features demonstrations
-├── run_all.py              # Quick demo script
+├── gui_app.py               # Tkinter graphical user interface
 ├── requirements.txt         # Python dependencies
-└── README.md               # This file
+├── Procfile                 # Deployment process command
+├── render.yaml              # 1-Click Render blueprint
+└── README.md                # Documentation
 ```
 
-## Installation
+## Installation & Running
 
-1. Clone or download this project
-2. Install dependencies (if any):
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+### Running the Web App (Browser Interface)
+```bash
+python web_app.py
+```
+Open [http://localhost:5000](http://localhost:5000) in your browser.
+
+### Deploying to Render
+1. Push this repository to GitHub.
+2. Sign in to [Render](https://render.com) and click **New + > Web Service**.
+3. Select your GitHub repository.
+4. Set **Build Command**: `pip install -r requirements.txt`
+5. Set **Start Command**: `gunicorn web_app:app`
+6. Click **Deploy Web Service** — your live link is ready!
+
+## Other Usage Options
 
 ### As a Python Module
 

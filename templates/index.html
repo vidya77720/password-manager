@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherForge - Advanced Password Manager & Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #121927;
+            --bg-card: rgba(22, 32, 50, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(99, 102, 241, 0.4);
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.12) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            padding: 24px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto 50px auto;
+            padding: 0 20px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .password-display-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .password-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #38bdf8;
+            letter-spacing: 0.04em;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .display-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--accent-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .strength-indicator {
+            margin-bottom: 24px;
+        }
+
+        .strength-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .strength-badge {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .strength-meter-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            gap: 4px;
+        }
+
+        .bar-segment {
+            height: 100%;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .feedback-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .chip {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Controls Section */
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 14px;
+        }
+
+        .length-control {
+            margin-bottom: 24px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .length-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 2px 10px;
+            border-radius: var(--radius-sm);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+            box-shadow: 0 0 12px #6366f1;
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* Presets */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .preset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Checkboxes Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .custom-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .custom-toggle:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .custom-toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .custom-toggle input[type="checkbox"]:checked + .toggle-box {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .custom-toggle input[type="checkbox"]:checked + .toggle-box::after {
+            content: '✓';
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .toggle-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        /* Primary action button */
+        .btn-generate {
+            width: 100%;
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            padding: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        /* Multiple Passwords Preview */
+        .multiple-results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .multiple-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding-right: 4px;
+        }
+
+        .multiple-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .multiple-copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .multiple-copy-btn:hover {
+            color: white;
+        }
+
+        /* Sidebar Stats & History */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .history-pass {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mini-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .mini-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+        .history-footer {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .btn-outline {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-secondary);
+            color: white;
+        }
+
+        .btn-danger-outline {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .btn-danger-outline:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: white;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+            <div class="brand-text">
+                <h1>CipherForge</h1>
+                <p>Enterprise-Grade Password Engine</p>
+            </div>
+        </a>
+        <div class="status-badge">
+            <span class="pulse-dot"></span>
+            <span>Live Security Engine</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left: Password Generator -->
+        <div class="card">
+            <!-- Display Box -->
+            <div class="password-display-card">
+                <div id="passwordDisplay" class="password-val">Generating...</div>
+                <div class="display-actions">
+                    <button id="copyBtn" class="btn-icon" title="Copy to clipboard">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                    <button id="regenerateBtn" class="btn-icon" title="Generate New">
+                        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Strength Meter -->
+            <div class="strength-indicator">
+                <div class="strength-header">
+                    <span style="color: var(--text-secondary);">Security Level:</span>
+                    <span id="strengthBadge" class="strength-badge">Analyzing</span>
+                </div>
+                <div class="strength-meter-bar">
+                    <div id="bar1" class="bar-segment"></div>
+                    <div id="bar2" class="bar-segment"></div>
+                    <div id="bar3" class="bar-segment"></div>
+                    <div id="bar4" class="bar-segment"></div>
+                    <div id="bar5" class="bar-segment"></div>
+                    <div id="bar6" class="bar-segment"></div>
+                </div>
+                <div id="feedbackContainer" class="feedback-chips"></div>
+            </div>
+
+            <!-- Presets -->
+            <div class="section-title">Quick Presets</div>
+            <div class="preset-grid">
+                <button class="preset-btn" onclick="applyPreset('pin')">PIN (6-Digit)</button>
+                <button class="preset-btn" onclick="applyPreset('standard')">Standard (12)</button>
+                <button class="preset-btn" onclick="applyPreset('strong')">Strong (16)</button>
+                <button class="preset-btn" onclick="applyPreset('paranoid')">Extreme (32)</button>
+            </div>
+
+            <!-- Length Slider -->
+            <div class="length-control">
+                <div class="slider-header">
+                    <span class="section-title" style="margin-bottom: 0;">Password Length</span>
+                    <span id="lengthValue" class="length-number">16</span>
+                </div>
+                <input type="range" id="lengthSlider" min="4" max="64" value="16">
+            </div>
+
+            <!-- Options -->
+            <div class="section-title">Character Sets</div>
+            <div class="options-grid">
+                <label class="custom-toggle">
+                    <input type="checkbox" id="optUppercase" checked>
+                    <div class="toggle-box"></div>
+                    <div>
+                        <span class="toggle-label">Uppercase Letters</span>
+                        <span class="toggle-desc">A-Z (e.g. ABCDEF)</span>
+                    </div>
+                </label>
+
+                <label class="custom-toggle">
+                    <input type="checkbox" id="optLowercase" checked>
+                    <div class="toggle-box"></div>
+                    <div>
+                        <span class="toggle-label">Lowercase Letters</span>
+                        <span class="toggle-desc">a-z (e.g. abcdef)</span>
+                    </div>
+                </label>
+
+                <label class="custom-toggle">
+                    <input type="checkbox" id="optDigits" checked>
+                    <div class="toggle-box"></div>
+                    <div>
+                        <span class="toggle-label">Numbers / Digits</span>
+                        <span class="toggle-desc">0-9 (e.g. 123456)</span>
+                    </div>
+                </label>
+
+                <label class="custom-toggle">
+                    <input type="checkbox" id="optSymbols" checked>
+                    <div class="toggle-box"></div>
+                    <div>
+                        <span class="toggle-label">Special Symbols</span>
+                        <span class="toggle-desc">!@#$%^&*()_+</span>
+                    </div>
+                </label>
+
+                <label class="custom-toggle" style="grid-column: span 2;">
+                    <input type="checkbox" id="optExcludeSimilar">
+                    <div class="toggle-box"></div>
+                    <div>
+                        <span class="toggle-label">Exclude Similar Characters</span>
+                        <span class="toggle-desc">Avoid confusing characters (i, l, 1, L, o, 0, O)</span>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Batch Count & Generate Button -->
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">Batch Count:</span>
+                    <select id="batchCount" style="background: transparent; color: white; border: none; font-size: 0.95rem; font-weight: 600; outline: none; cursor: pointer;">
+                        <option value="1" style="background: #1e293b;">1</option>
+                        <option value="3" style="background: #1e293b;">3</option>
+                        <option value="5" style="background: #1e293b;">5</option>
+                        <option value="10" style="background: #1e293b;">10</option>
+                    </select>
+                </div>
+
+                <button id="mainGenerateBtn" class="btn-generate">
+                    <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    <span>Generate Secure Password</span>
+                </button>
+            </div>
+
+            <!-- Multiple Passwords List (Batch mode) -->
+            <div id="multipleContainer" class="multiple-results">
+                <div class="section-title">Batch Generated Passwords</div>
+                <div id="multipleList" class="multiple-list"></div>
+            </div>
+        </div>
+
+        <!-- Right: Stats & History -->
+        <div class="sidebar">
+            <div class="card">
+                <div class="section-title">Generation Insights</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div id="statTotal" class="stat-number">0</div>
+                        <div class="stat-label">Total Created</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="statAvgLen" class="stat-number">0</div>
+                        <div class="stat-label">Avg Length</div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Recent History</span>
+                    <span id="historyCountBadge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">0 entries</span>
+                </div>
+
+                <div id="historyList" class="history-list">
+                    <div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.85rem;">
+                        No history yet. Generated passwords will be listed here.
+                    </div>
+                </div>
+
+                <div class="history-footer">
+                    <button id="clearHistoryBtn" class="btn-outline btn-danger-outline">Clear History</button>
+                    <a href="/api/export/json" download="password_history.json" class="btn-outline">Export JSON</a>
+                    <a href="/api/export/csv" download="password_history.csv" class="btn-outline">Export CSV</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <footer>
+        CipherForge Password Engine &bull; Protected with SHA-256 / Cryptographically Secure Randomization &bull; Ready for Cloud Deployment
+    </footer>
+
+    <script>
+        const lengthSlider = document.getElementById('lengthSlider');
+        const lengthValue = document.getElementById('lengthValue');
+        const optUppercase = document.getElementById('optUppercase');
+        const optLowercase = document.getElementById('optLowercase');
+        const optDigits = document.getElementById('optDigits');
+        const optSymbols = document.getElementById('optSymbols');
+        const optExcludeSimilar = document.getElementById('optExcludeSimilar');
+        const batchCount = document.getElementById('batchCount');
+
+        const passwordDisplay = document.getElementById('passwordDisplay');
+        const strengthBadge = document.getElementById('strengthBadge');
+        const feedbackContainer = document.getElementById('feedbackContainer');
+        const copyBtn = document.getElementById('copyBtn');
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        const mainGenerateBtn = document.getElementById('mainGenerateBtn');
+
+        const multipleContainer = document.getElementById('multipleContainer');
+        const multipleList = document.getElementById('multipleList');
+
+        const historyList = document.getElementById('historyList');
+        const historyCountBadge = document.getElementById('historyCountBadge');
+        const statTotal = document.getElementById('statTotal');
+        const statAvgLen = document.getElementById('statAvgLen');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Length slider sync
+        lengthSlider.addEventListener('input', (e) => {
+            lengthValue.textContent = e.target.value;
+        });
+
+        // Toast Helper
+        function showToast(msg) {
+            toastMessage.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Copy Helper
+        function copyToClipboard(text) {
+            if (!text || text === 'Generating...') return;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Password copied to clipboard!');
+            }).catch(() => {
+                // fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Password copied to clipboard!');
+            });
+        }
+
+        copyBtn.addEventListener('click', () => {
+            copyToClipboard(passwordDisplay.textContent);
+        });
+
+        // Quick Presets
+        function applyPreset(type) {
+            if (type === 'pin') {
+                lengthSlider.value = 6;
+                lengthValue.textContent = 6;
+                optUppercase.checked = false;
+                optLowercase.checked = false;
+                optDigits.checked = true;
+                optSymbols.checked = false;
+                optExcludeSimilar.checked = false;
+            } else if (type === 'standard') {
+                lengthSlider.value = 12;
+                lengthValue.textContent = 12;
+                optUppercase.checked = true;
+                optLowercase.checked = true;
+                optDigits.checked = true;
+                optSymbols.checked = true;
+                optExcludeSimilar.checked = false;
+            } else if (type === 'strong') {
+                lengthSlider.value = 16;
+                lengthValue.textContent = 16;
+                optUppercase.checked = true;
+                optLowercase.checked = true;
+                optDigits.checked = true;
+                optSymbols.checked = true;
+                optExcludeSimilar.checked = false;
+            } else if (type === 'paranoid') {
+                lengthSlider.value = 32;
+                lengthValue.textContent = 32;
+                optUppercase.checked = true;
+                optLowercase.checked = true;
+                optDigits.checked = true;
+                optSymbols.checked = true;
+                optExcludeSimilar.checked = true;
+            }
+            generatePassword();
+        }
+
+        // Render Strength UI
+        function updateStrengthUI(strengthData) {
+            const score = strengthData.score || 0;
+            const strength = strengthData.strength || 'Weak';
+            
+            strengthBadge.textContent = strength;
+            
+            let barColor = '#ef4444';
+            let badgeBg = 'rgba(239, 68, 68, 0.15)';
+            let badgeColor = '#ef4444';
+
+            if (strength === 'Strong') {
+                barColor = '#10b981';
+                badgeBg = 'rgba(16, 185, 129, 0.15)';
+                badgeColor = '#34d399';
+            } else if (strength === 'Medium') {
+                barColor = '#f59e0b';
+                badgeBg = 'rgba(245, 158, 11, 0.15)';
+                badgeColor = '#fbbf24';
+            }
+
+            strengthBadge.style.background = badgeBg;
+            strengthBadge.style.color = badgeColor;
+
+            for (let i = 1; i <= 6; i++) {
+                const bar = document.getElementById('bar' + i);
+                if (i <= score) {
+                    bar.style.background = barColor;
+                } else {
+                    bar.style.background = 'rgba(255, 255, 255, 0.08)';
+                }
+            }
+
+            // Feedback chips
+            feedbackContainer.innerHTML = '';
+            if (strengthData.feedback && strengthData.feedback.length > 0) {
+                strengthData.feedback.forEach(item => {
+                    const chip = document.createElement('span');
+                    chip.className = 'chip';
+                    chip.textContent = '💡 ' + item;
+                    feedbackContainer.appendChild(chip);
+                });
+            } else {
+                const chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                chip.style.color = '#34d399';
+                chip.textContent = '🛡️ High entropy & maximum security';
+                feedbackContainer.appendChild(chip);
+            }
+        }
+
+        // Generate Password via API
+        async function generatePassword() {
+            const count = parseInt(batchCount.value, 10);
+            const payload = {
+                length: parseInt(lengthSlider.value, 10),
+                use_uppercase: optUppercase.checked,
+                use_lowercase: optLowercase.checked,
+                use_digits: optDigits.checked,
+                use_symbols: optSymbols.checked,
+                exclude_similar: optExcludeSimilar.checked,
+                count: count
+            };
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.error || 'Generation failed');
+                    return;
+                }
+
+                if (data.passwords && data.passwords.length > 0) {
+                    passwordDisplay.textContent = data.passwords[0];
+                    updateStrengthUI(data.strength);
+
+                    if (count > 1) {
+                        multipleContainer.style.display = 'block';
+                        multipleList.innerHTML = '';
+                        data.passwords.forEach(pwd => {
+                            const item = document.createElement('div');
+                            item.className = 'multiple-item';
+                            item.innerHTML = `
+                                <span>${pwd}</span>
+                                <button class="multiple-copy-btn" title="Copy">
+                                    <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                </button>
+                            `;
+                            item.querySelector('.multiple-copy-btn').addEventListener('click', () => copyToClipboard(pwd));
+                            multipleList.appendChild(item);
+                        });
+                    } else {
+                        multipleContainer.style.display = 'none';
+                    }
+
+                    // Refresh history and stats
+                    fetchHistory();
+                    fetchStats();
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Network error while generating password');
+            }
+        }
+
+        // Fetch History
+        async function fetchHistory() {
+            try {
+                const res = await fetch('/api/history?limit=15');
+                const data = await res.json();
+                
+                if (data.history && data.history.length > 0) {
+                    historyList.innerHTML = '';
+                    const reversed = [...data.history].reverse();
+                    historyCountBadge.textContent = `${data.history.length} entries`;
+
+                    reversed.forEach((entry, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        
+                        let badgeColor = '#ef4444';
+                        if (entry.strength === 'Strong') badgeColor = '#34d399';
+                        else if (entry.strength === 'Medium') badgeColor = '#fbbf24';
+
+                        const formattedDate = new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        item.innerHTML = `
+                            <div>
+                                <div class="history-pass" title="${entry.password}">${entry.password}</div>
+                                <div class="history-meta">
+                                    <span style="color: ${badgeColor}; font-weight: 600;">${entry.strength || 'N/A'}</span>
+                                    <span>&bull;</span>
+                                    <span>${entry.length} chars</span>
+                                    <span>&bull;</span>
+                                    <span>${formattedDate}</span>
+                                </div>
+                            </div>
+                            <div class="history-actions">
+                                <button class="mini-btn copy-hist-btn" title="Copy">Copy</button>
+                            </div>
+                        `;
+
+                        item.querySelector('.copy-hist-btn').addEventListener('click', () => {
+                            copyToClipboard(entry.password);
+                        });
+
+                        historyList.appendChild(item);
+                    });
+                } else {
+                    historyCountBadge.textContent = '0 entries';
+                    historyList.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.85rem;">
+                            No history yet. Generated passwords will be listed here.
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error fetching history:', err);
+            }
+        }
+
+        // Fetch Stats
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                if (data.stats) {
+                    statTotal.textContent = data.stats.total_generated || 0;
+                    statAvgLen.textContent = data.stats.average_length || 0;
+                }
+            } catch (err) {
+                console.error('Error fetching stats:', err);
+            }
+        }
+
+        // Clear History
+        clearHistoryBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to clear your password history?')) return;
+            try {
+                await fetch('/api/clear-history', { method: 'POST' });
+                showToast('History cleared successfully');
+                fetchHistory();
+                fetchStats();
+            } catch (err) {
+                showToast('Failed to clear history');
+            }
+        });
+
+        // Event listeners
+        regenerateBtn.addEventListener('click', generatePassword);
+        mainGenerateBtn.addEventListener('click', generatePassword);
+
+        // Initial Generation on load
+        window.addEventListener('DOMContentLoaded', () => {
+            generatePassword();
+        });
+    </script>
+</body>
+</html>
